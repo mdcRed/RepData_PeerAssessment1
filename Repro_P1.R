@@ -133,6 +133,7 @@ medNew
 
 library (ggplot2)
 par(mfrow=c(2,1))
+
 hNew <-ggplot(data=totalStepsPerDayNew, aes(x=x))+
   ggtitle("Total Steps Per Day with NAs Replaced (binwidth=500)") + 
   xlab("Total Steps per Day")
@@ -149,9 +150,57 @@ h + geom_histogram(binwidth=500, aes(fill = ..count..)) +
 
 
 
-
-
 ## Are there differences in activity patterns between weekdays and weekends?
+## Add a new column dayOfWeek with factor of "Weekday" and "Weekend
+dat$dayOfWeek <- as.factor(ifelse(weekdays(as.Date(dat$date)) %in% c("Saturday", "Sunday"), "Weekend", "Weekday"))
+head(dat)
+
+## 2.  Get out two subset: wkday and wkend
+wkdayDat <- subset(dat, dat$dayOfWeek=="Weekday")
+wkendDat <- subset(dat, dat$dayOfWeek=="Weekend")
+
+aveStepsPerIntervalWkday <-aggregate(x=wkdayDat$steps,list(Interval=wkdayDat$interval), FUN=mean);
+aveStepsPerIntervalWkend <-aggregate(x=wkendDat$steps,list(Interval=wkendDat$interval), FUN=mean);
+## Plot for weekdays
+
+avePlotWkday <- ggplot(data=aveStepsPerIntervalWkday, aes(x = Interval, y = x, group=1)) +
+  ggtitle("Weekday: Average steps taken per interval") + 
+  xlab("Interval") +
+  ylab("Average Steps Per Interval") +
+  scale_x_discrete( breaks=x_breaks) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+avePlotWkday <- avePlotWkday + 
+  geom_point(aes(colour = x)) +
+  geom_line(color= "#238b45")   ##74c476
+
+
+
+## Plot for weekend
+
+avePlotWkend <- ggplot(data=aveStepsPerIntervalWkend, aes(x = Interval, y = x, group=1)) +
+  ggtitle("Weekend: Average steps taken per interval") + 
+  xlab("Interval") +
+  ylab("Average Steps Per Interval") +
+  scale_x_discrete( breaks=x_breaks) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+avePlotWkend <- avePlotWkend + 
+  geom_point(aes(colour = x)) +
+  geom_line(color= "#fc4e2a")   
+
+#par(mfrow=c(2,1))
+#avePlotWkday
+#avePlotWkend
+
+library(grid)
+grid.newpage()
+grid.draw(rbind(ggplotGrob(avePlotWkday), ggplotGrob(avePlotWkend), size = "last"))
+
+
+
+
+
 
 
 

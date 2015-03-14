@@ -148,7 +148,7 @@ h + geom_histogram(binwidth=500, aes(fill = ..count..)) +
     scale_fill_gradient("Count", low="#fccde5", high="#ae017e")
 ```
 
-![](Repro_P1_files/figure-html/hist_total_steps-1.png) 
+![](Repro_P1_files/figure-html/Section2_Q2_hist_total_steps-1.png) 
 
 3.  Calculate and report the mean and median of the total steps taken per day
 
@@ -206,7 +206,7 @@ avePlot <- avePlot +
 avePlot
 ```
 
-![](Repro_P1_files/figure-html/ave_steps_plot-1.png) 
+![](Repro_P1_files/figure-html/Section3_Q1_ave_steps_plot-1.png) 
 
 2.  **Calulating the maxinum average steps and identify the interval where the max is found**
 
@@ -307,7 +307,7 @@ median (steps)    | 10656               |  10765
 1.  *the mean and median are different when NAs are replaced* 
 2.  Since the steps is non-negative, if the steps are replaced with positive numbers, the mean and median will be higher.  If the NAs are replaced with zeroes, the mean and median will be smaller.  
 
-![](Repro_P1_files/figure-html/iv_q4_b-1.png) 
+![](Repro_P1_files/figure-html/Section4_Q4_iv_q4_b-1.png) 
 
 ## V.  Are there differences in activity patterns between weekdays and weekends?
 
@@ -340,7 +340,7 @@ wkdayDat <- subset(dat, dat$dayOfWeek=="Weekday")
 wkendDat <- subset(dat, dat$dayOfWeek=="Weekend")
 ```
 
-3. **Calculate average steps per interval for the Weekday and Weekend groups/subsets**
+3. **Calculate average steps per interval for the Weekday and Weekend groups or subsets**
 
 
 ```r
@@ -359,7 +359,7 @@ grid.newpage()
 grid.draw(rbind(ggplotGrob(avePlotWkday), ggplotGrob(avePlotWkend), size = "last"))
 ```
 
-![](Repro_P1_files/figure-html/v_q4_plot-1.png) 
+![](Repro_P1_files/figure-html/Section5_Q2_v_q4_plot-1.png) 
 
 **Observation:**  Referencing the above figures, it is observed that there are more activities on the weekend than that of weekdays.  
 

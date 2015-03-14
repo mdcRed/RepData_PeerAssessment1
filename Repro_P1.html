@@ -310,7 +310,7 @@ head(dat)</code></pre>
 <pre class="r"><code>wkdayDat &lt;- subset(dat, dat$dayOfWeek==&quot;Weekday&quot;)
 wkendDat &lt;- subset(dat, dat$dayOfWeek==&quot;Weekend&quot;)</code></pre>
 <ol start="3" style="list-style-type: decimal">
-<li><strong>Calculate average steps per interval for the Weekday and Weekend groups/subsets</strong></li>
+<li><strong>Calculate average steps per interval for the Weekday and Weekend groups or subsets</strong></li>
 </ol>
 <pre class="r"><code>aveStepsPerIntervalWkday &lt;-aggregate(x=wkdayDat$steps,list(Interval=wkdayDat$interval), FUN=mean);
 aveStepsPerIntervalWkend &lt;-aggregate(x=wkendDat$steps,list(Interval=wkendDat$interval), FUN=mean);</code></pre>
