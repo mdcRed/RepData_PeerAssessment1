@@ -28,15 +28,56 @@ The dataset is stored in a comma-separated-value (CSV) file and there are a tota
 
 ## Loading and preprocessing the data
 
+The activity data set is read in memory using read.table(), with comma is a separator and convert to a data frame.  Some prelimiary observations on the dataset:
+
+1.  There are total of 17,568 observation; after removing the obseravations that contain NAs, there are 15,264 observations remained.
+
+2.  The observations spanned through 61 days; of which only 53 days that contains non-NAs observations.  
+
+
 ```{r Load_initEx}
-dat <-  data.frame(read.table("~/Documents/Coursera/ReproR/GitTest/RepData_PeerAssessment1/activity.csv", header=TRUE, sep=","))
-## for testing the git hub
-d <- na.omit(dat);
-plot(d);
+
+dat <-  data.frame(read.table
+                   ("~/Documents/Coursera/ReproR/GitTest/RepData_PeerAssessment1/activity.csv"
+                    , header=TRUE, sep=","))
+
+## Removing NA's
+df <- na.omit(dat);
+nrow(df)
+
+## Number of days spanned with NA's
+tDays <- unique(dat$date)
+length(tDays)
+
+## Number of days spanned without NA's
+t <- unique(df$date)
+length(t)
 ```
 
 
 ## What is mean total number of steps taken per day?
+
+In this section, the observations with missing values are ignored, or not included in the analysis.  
+
+1.  Calculate the total number of steps taken per day.  The rows in the dataset can be grouped into each day, then one can sum up the steps of the observed intervals of the day.  To do this, one can use aggregate() function -- aggreage data base on date, and apply summaation on the steps, as in the below line of code: 
+
+```{r}
+totalStepsPerDay <-aggregate(x=df$steps,list(date=df$date), FUN=sum, na.rm=TRUE);
+totalStepsPerDay
+```
+
+2.  Histogram to show totals steps taken each day
+
+```{r hist_total_steps}
+library (ggplot2)
+
+h <-ggplot(data=totalStepsPerDay, aes(x=x))+
+          ggtitle("Histogram of total steps per day (binwidth=500)") + 
+          xlab("Total Steps")
+h + geom_histogram(binwidth=500, aes(fill = ..count..)) +
+    scale_fill_gradient("Count", low="#fccde5", high="#ae017e")
+
+```
 
 
 
