@@ -13,11 +13,11 @@ It is now possible to collect a large amount of data about personal movement usi
 
 The variables included in this dataset are:
 
-    * **steps:**  Number of steps taking in a 5-minute interval (missing values are coded as NA)
+    1. **steps:**  Number of steps taking in a 5-minute interval (missing values are coded as NA)
 
-    * **date:** The date on which the measurement was taken in YYYY-MM-DD format
+    2. **date:** The date on which the measurement was taken in YYYY-MM-DD format
 
-    * **interval:**  Identifier for the 5-minute interval in which measurement was taken
+    3. **interval:**  Identifier for the 5-minute interval at which the measurements were taken.  *Each interval of the day is identified by a number; i.e. the identifier is same for 8:00 - 8:05 am every day of the year.*  
 
 The dataset is stored in a comma-separated-value (CSV) file and there are a total of 17,568 observations in this dataset.
 
@@ -143,17 +143,94 @@ library (ggplot2)
 
 h <-ggplot(data=totalStepsPerDay, aes(x=x))+
           ggtitle("Histogram of total steps per day (binwidth=500)") + 
-          xlab("Total Steps")
+          xlab("Total Steps per Day")
 h + geom_histogram(binwidth=500, aes(fill = ..count..)) +
     scale_fill_gradient("Count", low="#fccde5", high="#ae017e")
 ```
 
 ![](Repro_P1_files/figure-html/hist_total_steps-1.png) 
 
+3.  Calculate and report the mean and median of the total steps taken per day
 
+
+```r
+mu <- mean (totalStepsPerDay$x)
+mu
+```
+
+```
+## [1] 10766.19
+```
+
+```r
+med <- median (totalStepsPerDay$x)
+med
+```
+
+```
+## [1] 10765
+```
 
 ## What is the average daily activity pattern?
 
+1.  **Ploting the average steps taken per interval identifier, across all observed days**
+
+The interval identifier is a label for a five-minute interval during the date.   The dataset will be grouped using the interval identifers for all observed days; then the averaage steps is calculated for each groups.   The code is below. 
+
+
+```r
+aveStepsPerInterval <-aggregate(x=df$steps,list(Interval=df$interval), FUN=mean, na.rm=TRUE);
+```
+
+Below code will plot the average of steps per interval identifier, across the observer days. 
+
+
+```r
+library(scales)
+x_breaks <- c(0,55,100,155,200,255,300,355,400, 455, 500, 555,
+            600, 655, 700, 755, 800, 855, 900, 955, 1000, 1055, 
+           1100, 1155, 1200, 1255, 1300, 1355, 1400, 1455, 1500, 1555, 
+           1600, 1655, 1700, 1755, 1800, 1855, 1900, 1955, 2000, 2055,
+           2100,2155,2200,2255,2300,2355)
+ 
+avePlot <- ggplot(data=aveStepsPerInterval, aes(x = Interval, y = x, group=1)) +
+  ggtitle("Average steps taken per interval, across all observed days") + 
+  xlab("Interval ID") +
+  ylab("Average Steps Per Interval") +
+  scale_x_discrete( breaks=x_breaks) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+avePlot <- avePlot + 
+           geom_point(aes(colour = x)) +
+           geom_line(color="#41b6c4")
+avePlot
+```
+
+![](Repro_P1_files/figure-html/ave_steps_plot-1.png) 
+
+2.  **Calulating the maxinum average steps and identify the interval where the max is found**
+
+The maxinum average steps is round up to be 206 steps, and it occurs at the time with interval identifier of 835.  
+
+
+```r
+mx <- round(max(aveStepsPerInterval$x));
+mx
+```
+
+```
+## [1] 206
+```
+
+```r
+indx <- which(aveStepsPerInterval$x==max(aveStepsPerInterval$x));
+mxInterval <- aveStepsPerInterval$Interval[indx]
+mxInterval
+```
+
+```
+## [1] 835
+```
 
 
 ## Imputing missing values
