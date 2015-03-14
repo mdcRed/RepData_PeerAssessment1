@@ -109,12 +109,45 @@ indx <- which(aveStepsPerInterval$x==max(aveStepsPerInterval$x));
 mxInterval <- aveStepsPerInterval$Interval[indx]
 mxInterval
 
-## Find maxinum number of st
-
-
-
-
 ## Imputing missing values
+##   1. number of na's
+ind <- which(is.na(dat))
+length(ind)
+
+###  2. Stategy: using the average of the day
+aveStepsPerDay <-aggregate(x=df$steps,list(date=df$date), FUN=mean, na.rm=TRUE);
+###  Find the mean of average steps per Interval 
+replacedBy <- round(mean(aveStepsPerInterval$x))
+### Replace the vaulue
+dat$steps[which(is.na(dat))] <- replacedBy
+length(which(is.na(dat)))
+
+## Recalculate the total number of steps taking each day
+totalStepsPerDayNew <-aggregate(x=dat$steps,list(date=dat$date), FUN=sum);
+### New mu and Median
+muNew <- mean (totalStepsPerDayNew$x)
+muNew
+
+medNew <- median (totalStepsPerDayNew$x)
+medNew
+
+library (ggplot2)
+par(mfrow=c(2,1))
+hNew <-ggplot(data=totalStepsPerDayNew, aes(x=x))+
+  ggtitle("Total Steps Per Day with NAs Replaced (binwidth=500)") + 
+  xlab("Total Steps per Day")
+hNew + geom_histogram(binwidth=500, aes(fill = ..count..)) +
+  scale_fill_gradient("Count", low="#c2a5cf", high="#762a83")
+
+h <-ggplot(data=totalStepsPerDay, aes(x=x))+
+  ggtitle("Histogram of total steps per day (binwidth=500)") + 
+  xlab("Total Steps")
+h + geom_histogram(binwidth=500, aes(fill = ..count..)) +
+  scale_fill_gradient("Count", low="#fccde5", high="#ae017e")
+
+
+
+
 
 
 

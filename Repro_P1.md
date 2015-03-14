@@ -21,7 +21,7 @@ The variables included in this dataset are:
 
 The dataset is stored in a comma-separated-value (CSV) file and there are a total of 17,568 observations in this dataset.
 
-## Loading and preprocessing the data
+## I.   Loading and preprocessing the data
 
 The activity data set is read in memory using read.table(), with comma is a separator and convert to a data frame.  Some prelimiary observations on the dataset:
 
@@ -66,7 +66,7 @@ length(t)
 ```
 
 
-## What is mean total number of steps taken per day?
+## II.  What is mean total number of steps taken per day?
 
 In this section, the observations with missing values are ignored, or not included in the analysis.  
 
@@ -171,7 +171,7 @@ med
 ## [1] 10765
 ```
 
-## What is the average daily activity pattern?
+## III.  What is the average daily activity pattern?
 
 1.  **Ploting the average steps taken per interval identifier, across all observed days**
 
@@ -210,7 +210,7 @@ avePlot
 
 2.  **Calulating the maxinum average steps and identify the interval where the max is found**
 
-The maxinum average steps is round up to be 206 steps, and it occurs at the time with interval identifier of 835.  
+The maxinum average steps is round up to be **206 steps**, and it occurs at the time with interval identifier of **835 time interval**.  
 
 
 ```r
@@ -232,8 +232,87 @@ mxInterval
 ## [1] 835
 ```
 
+## IV.  Imputing missing values
 
-## Imputing missing values
+1. **Total number of missing values in the dataset**
+
+The dataset **dat** read from *activity.csv* contains the NAs.  The total number of rows with NAs is **2304**.
+
+
+```r
+ind <- which(is.na(dat))
+length(ind)
+```
+
+```
+## [1] 2304
+```
+
+2.  **Strategy on choosing number of steps that contain NAs**  Using the mean of the average of steps for each interval.   This number is calcuated to be 37 steps.
+
+
+```r
+replacedBy <- round(mean(aveStepsPerInterval$x))
+replacedBy
+```
+
+```
+## [1] 37
+```
+
+3.  **Replace all the NA's in the dataset**  with *devised new* number of steps; the next line is to check that there is no more NAs in the dataset. 
+
+
+```r
+dat$steps[which(is.na(dat))] <- replacedBy
+length(which(is.na(dat)))
+```
+
+```
+## [1] 0
+```
+
+4.  **Recalculate the total number of steps taken each day, its mean, median ,  and plot new histogram **
+
+
+```r
+totalStepsPerDayNew <-aggregate(x=dat$steps,list(date=dat$date), FUN=sum);
+muNew <- mean (totalStepsPerDayNew$x)
+muNew
+```
+
+```
+## [1] 10751.74
+```
+
+```r
+medNew <- median (totalStepsPerDayNew$x)
+medNew
+```
+
+```
+## [1] 10656
+```
+
+Following table show the adjusted mean and median of the dataset with replaced NAs, as compared to those of the dataset with NAs are being removed. 
+
+Measure           | With NA replaced    |  Removed NAs
+------------------|---------------------|-----------------
+mean (steps)      | 10751.74            |  10766.19
+median (steps)    | 10656               |  10765
+
+
+**Conclusion:**  
+
+1.  *the mean and median are different when NAs are replaced* 
+2.  Since the steps is non-negative, if the steps are replaced with positive numbers, the mean and median will be higher.  If the NAs are replaced with zeroes, the mean and median will be smaller.  
+
+![](Repro_P1_files/figure-html/iv_q4_b-1.png) ![](Repro_P1_files/figure-html/iv_q4_b-2.png) 
+
+
+
+
+
 
 
 
