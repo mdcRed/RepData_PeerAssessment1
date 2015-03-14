@@ -13,11 +13,11 @@ It is now possible to collect a large amount of data about personal movement usi
 
 The variables included in this dataset are:
 
-    1. **steps:**  Number of steps taking in a 5-minute interval (missing values are coded as NA)
+1. steps:  Number of steps taking in a 5-minute interval (missing values are coded as NA)
 
-    2. **date:** The date on which the measurement was taken in YYYY-MM-DD format
+2. date: The date on which the measurement was taken in YYYY-MM-DD format
 
-    3. **interval:**  Identifier for the 5-minute interval at which the measurements were taken.  *Each interval of the day is identified by a number; i.e. the identifier is same for 8:00 - 8:05 am every day of the year.*  
+3. interval:  Identifier for the 5-minute interval at which the measurements were taken.  *Each interval of the day is identified by a number; i.e. the identifier is same for 8:00 - 8:05 am every day of the year.*  
 
 The dataset is stored in a comma-separated-value (CSV) file and there are a total of 17,568 observations in this dataset.
 
@@ -307,14 +307,61 @@ median (steps)    | 10656               |  10765
 1.  *the mean and median are different when NAs are replaced* 
 2.  Since the steps is non-negative, if the steps are replaced with positive numbers, the mean and median will be higher.  If the NAs are replaced with zeroes, the mean and median will be smaller.  
 
-![](Repro_P1_files/figure-html/iv_q4_b-1.png) ![](Repro_P1_files/figure-html/iv_q4_b-2.png) 
+![](Repro_P1_files/figure-html/iv_q4_b-1.png) 
+
+## V.  Are there differences in activity patterns between weekdays and weekends?
+
+In the last section the dataset *dat* has its NAs filled-in; the stragey in this particular exercise, a mean of all the average steps per interval was chosen to be the filled in number.  This dataset *dat* will be using in this section for calculation.  
+
+1.  **Create a new factor Weekday and Weekend** apply the  weekdays() function tho the date column in derivign "Weekday" and "Weekend" factor, as in the following code.
+
+
+```r
+dat$dayOfWeek <- as.factor(ifelse(weekdays(as.Date(dat$date)) %in% c("Saturday", "Sunday"), "Weekend", "Weekday"))
+
+head(dat)
+```
+
+```
+##   steps       date interval dayOfWeek
+## 1    37 2012-10-01        0   Weekday
+## 2    37 2012-10-01        5   Weekday
+## 3    37 2012-10-01       10   Weekday
+## 4    37 2012-10-01       15   Weekday
+## 5    37 2012-10-01       20   Weekday
+## 6    37 2012-10-01       25   Weekday
+```
+
+2.  **Separate out observations for the Weekdays vs Weekends**
+
+
+```r
+wkdayDat <- subset(dat, dat$dayOfWeek=="Weekday")
+wkendDat <- subset(dat, dat$dayOfWeek=="Weekend")
+```
+
+3. **Calculate average steps per interval for the Weekday and Weekend groups/subsets**
+
+
+```r
+aveStepsPerIntervalWkday <-aggregate(x=wkdayDat$steps,list(Interval=wkdayDat$interval), FUN=mean);
+aveStepsPerIntervalWkend <-aggregate(x=wkendDat$steps,list(Interval=wkendDat$interval), FUN=mean);
+```
+
+4. **Time series plots of activity of Weekdays vs Weekends**
 
 
 
 
+```r
+library(grid)
+grid.newpage()
+grid.draw(rbind(ggplotGrob(avePlotWkday), ggplotGrob(avePlotWkend), size = "last"))
+```
 
+![](Repro_P1_files/figure-html/v_q4_plot-1.png) 
 
+**Observation:**  Referencing the above figures, it is observed that there are more activities on the weekend than that of weekdays.  
 
-
-## Are there differences in activity patterns between weekdays and weekends?
+Since the *original dataset has its NAs replaced with an positive number of steps*.   The replacement is an average steps of the mean per interval. **The filled-in dataset is used in this analysis.**  Therefore, the above observation may not be true.  One true thing is that in the original dataset, most NAs are found in the weekends.  For such reason, it can be true that there are less activities during the weekend. 
 

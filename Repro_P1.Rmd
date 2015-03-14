@@ -3,8 +3,9 @@ title: "Reproducible Research - Self Monitor Activity Dataset Analysis"
 author: "My D. Coyne"
 date: "March 9, 2015"
 output:
+  pdf_document: default
   html_document:
-    keep_md: true
+    keep_md: yes
 ---
 
     
@@ -18,11 +19,11 @@ It is now possible to collect a large amount of data about personal movement usi
 
 The variables included in this dataset are:
 
-    1. **steps:**  Number of steps taking in a 5-minute interval (missing values are coded as NA)
+1. steps:  Number of steps taking in a 5-minute interval (missing values are coded as NA)
 
-    2. **date:** The date on which the measurement was taken in YYYY-MM-DD format
+2. date: The date on which the measurement was taken in YYYY-MM-DD format
 
-    3. **interval:**  Identifier for the 5-minute interval at which the measurements were taken.  *Each interval of the day is identified by a number; i.e. the identifier is same for 8:00 - 8:05 am every day of the year.*  
+3. interval:  Identifier for the 5-minute interval at which the measurements were taken.  *Each interval of the day is identified by a number; i.e. the identifier is same for 8:00 - 8:05 am every day of the year.*  
 
 The dataset is stored in a comma-separated-value (CSV) file and there are a total of 17,568 observations in this dataset.
 
@@ -185,27 +186,75 @@ median (steps)    | 10656               |  10765
 2.  Since the steps is non-negative, if the steps are replaced with positive numbers, the mean and median will be higher.  If the NAs are replaced with zeroes, the mean and median will be smaller.  
 
 ```{r iv_q4_b, echo=FALSE}
+
 library (ggplot2)
-par(mfrow=c(2,1))
+
 hNew <-ggplot(data=totalStepsPerDayNew, aes(x=x))+
           ggtitle("Total Steps Per Day with NAs Replaced (binwidth=500)") + 
           xlab("Total Steps per Day")
 hNew + geom_histogram(binwidth=500, aes(fill = ..count..)) +
     scale_fill_gradient("Count", low="#c2a5cf", high="#762a83")
-
-h <-ggplot(data=totalStepsPerDay, aes(x=x))+
-          ggtitle("Histogram of total steps per day (binwidth=500)") + 
-          xlab("Total Steps")
-h + geom_histogram(binwidth=500, aes(fill = ..count..)) +
-    scale_fill_gradient("Count", low="#fccde5", high="#ae017e")
 ```
 
+## V.  Are there differences in activity patterns between weekdays and weekends?
 
+In the last section the dataset *dat* has its NAs filled-in; the stragey in this particular exercise, a mean of all the average steps per interval was chosen to be the filled in number.  This dataset *dat* will be using in this section for calculation.  
 
+1.  **Create a new factor Weekday and Weekend** apply the  weekdays() function tho the date column in derivign "Weekday" and "Weekend" factor, as in the following code.
 
+```{r}
+dat$dayOfWeek <- as.factor(ifelse(weekdays(as.Date(dat$date)) %in% c("Saturday", "Sunday"), "Weekend", "Weekday"))
 
+head(dat)
+```
 
+2.  **Separate out observations for the Weekdays vs Weekends**
 
+```{r}
+wkdayDat <- subset(dat, dat$dayOfWeek=="Weekday")
+wkendDat <- subset(dat, dat$dayOfWeek=="Weekend")
+```
 
-## Are there differences in activity patterns between weekdays and weekends?
+3. **Calculate average steps per interval for the Weekday and Weekend groups/subsets**
+
+```{r}
+aveStepsPerIntervalWkday <-aggregate(x=wkdayDat$steps,list(Interval=wkdayDat$interval), FUN=mean);
+aveStepsPerIntervalWkend <-aggregate(x=wkendDat$steps,list(Interval=wkendDat$interval), FUN=mean);
+```
+
+4. **Time series plots of activity of Weekdays vs Weekends**
+
+```{r v_q4_plotcode, echo=FALSE}
+avePlotWkday <- ggplot(data=aveStepsPerIntervalWkday, aes(x = Interval, y = x, group=1)) +
+  ggtitle("Weekday: Average steps taken per interval") + 
+  xlab("Interval") +
+  ylab("Average Steps Per Interval") +
+  scale_x_discrete( breaks=x_breaks) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+avePlotWkday <- avePlotWkday + 
+  geom_point(aes(colour = x)) +
+  geom_line(color= "#238b45")   ##74c476
+
+avePlotWkend <- ggplot(data=aveStepsPerIntervalWkend, aes(x = Interval, y = x, group=1)) +
+  ggtitle("Weekend: Average steps taken per interval") + 
+  xlab("Interval") +
+  ylab("Average Steps Per Interval") +
+  scale_x_discrete( breaks=x_breaks) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+avePlotWkend <- avePlotWkend + 
+  geom_point(aes(colour = x)) +
+  geom_line(color= "#fc4e2a")   
+```
+
+```{r v_q4_plot}
+library(grid)
+grid.newpage()
+grid.draw(rbind(ggplotGrob(avePlotWkday), ggplotGrob(avePlotWkend), size = "last"))
+```
+
+**Observation:**  Referencing the above figures, it is observed that there are more activities on the weekend than that of weekdays.  
+
+Since the *original dataset has its NAs replaced with an positive number of steps*.   The replacement is an average steps of the mean per interval. **The filled-in dataset is used in this analysis.**  Therefore, the above observation may not be true.  One true thing is that in the original dataset, most NAs are found in the weekends.  For such reason, it can be true that there are less activities during the weekend. 
 
