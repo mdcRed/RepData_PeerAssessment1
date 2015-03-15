@@ -30,7 +30,7 @@ tDays <- unique(dat$date)
 length(tDays)
 
 ## Number of days spanned without NA's
-t <- unique(d$date)
+t <- unique(df$date)
 length(t)
 
 
@@ -80,15 +80,18 @@ med
 
 ## Calcualte average steps takeen per day
 library(scales)
+# group data by interval identifier and calculate mean of the groups
 aveStepsPerInterval <-aggregate(x=df$steps,list(Interval=df$interval), FUN=mean, na.rm=TRUE);
+# Define an equivalent time interval
+xInterval <- seq(from=0, to=1435, by=5)
+# attach the time interval to the data frame 
+aveStepsPerInterval <- cbind(aveStepsPerInterval,xInterval)
 
-x_breaks <- c(0,55,100,155,200,255,300,355,400, 455, 500, 555,
-              600, 655, 700, 755, 800, 855, 900, 955, 1000, 1055, 
-              1100, 1155, 1200, 1255, 1300, 1355, 1400, 1455, 1500, 1555, 
-              1600, 1655, 1700, 1755, 1800, 1855, 1900, 1955, 2000, 2055,
-              2100,2155,2200,2255,2300,2355)
- 
-avePlot <- ggplot(data=aveStepsPerInterval, aes(x = Interval, y = x, group=1)) +
+# this is used to label the x-axis time series
+x_breaks <- seq(from=0, to=1440, by=30);
+
+#plotting
+avePlot <- ggplot(data=aveStepsPerInterval, aes(x = xInterval, y = x, group=1)) +
   ggtitle("Average steps taken per interval, across all observed days") + 
   xlab("Interval") +
   ylab("Average Steps Per Interval") +
@@ -159,11 +162,16 @@ wkendDat <- subset(dat, dat$dayOfWeek=="Weekend")
 
 aveStepsPerIntervalWkday <-aggregate(x=wkdayDat$steps,list(Interval=wkdayDat$interval), FUN=mean);
 aveStepsPerIntervalWkend <-aggregate(x=wkendDat$steps,list(Interval=wkendDat$interval), FUN=mean);
+
+# append a time interval to the data frame to graph the time series
+aveStepsPerIntervalWkday <- cbind(aveStepsPerIntervalWkday,xInterval);
+aveStepsPerIntervalWkend <- cbind(aveStepsPerIntervalWkend,xInterval);
+
 ## Plot for weekdays
 
-avePlotWkday <- ggplot(data=aveStepsPerIntervalWkday, aes(x = Interval, y = x, group=1)) +
+avePlotWkday <- ggplot(data=aveStepsPerIntervalWkday, aes(x = xInterval, y = x, group=1)) +
   ggtitle("Weekday: Average steps taken per interval") + 
-  xlab("Interval") +
+  xlab("Interval (in 30-minutes)") +
   ylab("Average Steps Per Interval") +
   scale_x_discrete( breaks=x_breaks) +
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
@@ -176,9 +184,9 @@ avePlotWkday <- avePlotWkday +
 
 ## Plot for weekend
 
-avePlotWkend <- ggplot(data=aveStepsPerIntervalWkend, aes(x = Interval, y = x, group=1)) +
+avePlotWkend <- ggplot(data=aveStepsPerIntervalWkend, aes(x = xInterval, y = x, group=1)) +
   ggtitle("Weekend: Average steps taken per interval") + 
-  xlab("Interval") +
+  xlab("Interval (in 30-minutes)") +
   ylab("Average Steps Per Interval") +
   scale_x_discrete( breaks=x_breaks) +
   theme(axis.text.x = element_text(angle = 90, hjust = 1))

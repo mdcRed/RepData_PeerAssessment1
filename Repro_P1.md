@@ -33,8 +33,8 @@ The activity data set is read in memory using read.table(), with comma is a sepa
 
 ```r
 dat <-  data.frame(read.table
-                   ("~/Documents/Coursera/ReproR/GitTest/RepData_PeerAssessment1/activity.csv"
-                    , header=TRUE, sep=","))
+    ("~/Documents/Coursera/ReproR/GitTest/RepData_PeerAssessment1/activity.csv"
+    , header=TRUE, sep=","))
 
 ## Removing NA's
 df <- na.omit(dat);
@@ -175,11 +175,19 @@ med
 
 1.  **Ploting the average steps taken per interval identifier, across all observed days**
 
-The interval identifier is a label for a five-minute interval during the date.   The dataset will be grouped using the interval identifers for all observed days; then the averaage steps is calculated for each groups.   The code is below. 
+The interval identifier is a label for a five-minute interval during the date.   The dataset will be grouped using the interval identifers for all observed days; then the averaage steps is calculated for each groups.
+
+A note about the interval in the dataset-- this is an *identifer* for a 5-minute interval, not the actual time of the day.  For example 0-55 minutes of the day has the *interval identifier* of 0, 5, ..., 55, and the 60th-65th minute of the day has the identifer of 100.  In order to plot the time series (continous time), an *xInterval* sequence is introduced--sequence of 0..1440, step by 5 minutes.  In addition, in order to label the x-axis with time marks, a *x_breaks* variable is defined as a sequence of 0..1440, step by 30 minutes. 
+
 
 
 ```r
+#Group data by its 5-minute interval identifer, across all days,
+# and then calculate the average steps for the interval identifer
 aveStepsPerInterval <-aggregate(x=df$steps,list(Interval=df$interval), FUN=mean, na.rm=TRUE);
+## define a time equivalent of the interval identifier
+xInterval <- seq(from=0, to=1435, by=5)
+aveStepsPerInterval <- cbind(aveStepsPerInterval,xInterval)
 ```
 
 Below code will plot the average of steps per interval identifier, across the observer days. 
@@ -187,15 +195,11 @@ Below code will plot the average of steps per interval identifier, across the ob
 
 ```r
 library(scales)
-x_breaks <- c(0,55,100,155,200,255,300,355,400, 455, 500, 555,
-            600, 655, 700, 755, 800, 855, 900, 955, 1000, 1055, 
-           1100, 1155, 1200, 1255, 1300, 1355, 1400, 1455, 1500, 1555, 
-           1600, 1655, 1700, 1755, 1800, 1855, 1900, 1955, 2000, 2055,
-           2100,2155,2200,2255,2300,2355)
+x_breaks <- seq(from=0, to=1440, by=30);
  
-avePlot <- ggplot(data=aveStepsPerInterval, aes(x = Interval, y = x, group=1)) +
+avePlot <- ggplot(data=aveStepsPerInterval, aes(x = xInterval, y = x, group=1)) +
   ggtitle("Average steps taken per interval, across all observed days") + 
-  xlab("Interval ID") +
+  xlab("Interval (30-minutes time)") +
   ylab("Average Steps Per Interval") +
   scale_x_discrete( breaks=x_breaks) +
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
@@ -203,6 +207,7 @@ avePlot <- ggplot(data=aveStepsPerInterval, aes(x = Interval, y = x, group=1)) +
 avePlot <- avePlot + 
            geom_point(aes(colour = x)) +
            geom_line(color="#41b6c4")
+
 avePlot
 ```
 
@@ -210,7 +215,7 @@ avePlot
 
 2.  **Calulating the maxinum average steps and identify the interval where the max is found**
 
-The maxinum average steps is round up to be **206 steps**, and it occurs at the time with interval identifier of **835 time interval**.  
+The maxinum average steps is round up to be **206 steps**, and it occurs at **835 interval identifier or at 8:35 in the morning. ** 
 
 
 ```r
@@ -342,10 +347,17 @@ wkendDat <- subset(dat, dat$dayOfWeek=="Weekend")
 
 3. **Calculate average steps per interval for the Weekday and Weekend groups or subsets**
 
+Similar in part 3, a real time sequence *xInterval* is bound into the data frame to plot a time series.  
+
+
 
 ```r
 aveStepsPerIntervalWkday <-aggregate(x=wkdayDat$steps,list(Interval=wkdayDat$interval), FUN=mean);
 aveStepsPerIntervalWkend <-aggregate(x=wkendDat$steps,list(Interval=wkendDat$interval), FUN=mean);
+
+# Append a time interval to the data frame to graph the time series
+aveStepsPerIntervalWkday <- cbind(aveStepsPerIntervalWkday,xInterval);
+aveStepsPerIntervalWkend <- cbind(aveStepsPerIntervalWkend,xInterval);
 ```
 
 4. **Time series plots of activity of Weekdays vs Weekends**
