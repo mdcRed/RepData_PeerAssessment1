@@ -1,10 +1,8 @@
-# Title:  ToothGrowth data analysis
-# Class:  Statistical Inference (Coursera.org)
+# Title:  Reproducible Research - Self Monitor Activity Dataset Analysis
+# Class:  Reproducible Research (Coursera.org)
 # Name:   My D. Coyne
-
-
+# Project #1
 # Set working directory
-
 setwd("~/Documents/Coursera/ReproR/GitTest/RepData_PeerAssessment1")
 
 # Load packages in order to generate pdf documentation afterwards

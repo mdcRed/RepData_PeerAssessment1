@@ -3,9 +3,9 @@ title: "Reproducible Research - Self Monitor Activity Dataset Analysis"
 author: "My D. Coyne"
 date: "March 9, 2015"
 output:
-  pdf_document: default
   html_document:
     keep_md: yes
+  pdf_document: default
 ---
 
     
